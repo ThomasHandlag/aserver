@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base{
+    @keyframes hover-animation {
+        0% {
+            rotate: 10deg;
+        }
+        50% {
+            rotate: 0;
+        }
+        100% {
+            rotate: -10deg;
+        }
+    }
+    .nof-animation {
+        animation: hover-animation 0.1s infinite;
+    }
+}

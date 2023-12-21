@@ -1,0 +1,49 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: tvthuong
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: myapp
+    container_name: my-app
+    restart: unless-stopped
+    working_dir: /var/www/res_api
+    volumes:
+      - ./:/var/www/res_api
+    networks:
+      - myapp
+
+  db:
+    image: mysql:8.0
+    container_name: my-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - myapp
+
+  nginx:
+    image: nginx:alpine
+    container_name: app-nginx
+    restart: unless-stopped
+    ports:
+      - 8000:80
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - myapp
+
+networks:
+  myapp:
+    driver: bridge

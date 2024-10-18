@@ -1,1 +1,1 @@
-# a server for my project
+# a simple dashboard

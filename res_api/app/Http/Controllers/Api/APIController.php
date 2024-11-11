@@ -11,100 +11,56 @@ use Illuminate\Support\Facades\Hash;
 
 class APIController extends Controller
 {
-    public function signin(Request $request)
+    public function getSongs()
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-        // Attempt to log the user in
-        if (Auth::attempt($request->only('email', 'password'))) {
-            $user = DB::select('SELECT * FROM users WHERE email = "' . $request->email . '"')[0];
-            return response()->json(['user' => $user, 'success' => true]);
-        }
-        // Return an error response
-        return response()->json([
-            'error' => 'The provided credentials are incorrect.',
-            'success' => false
-        ]);
+        $songs = DB::table('songs')->get();
+        return response()->json($songs);
     }
 
-    // Register a new user and insert into DB
-    public function signup(Request $request)
+    public function getSong($id)
     {
-        // Create a new user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
-
-        $data = DB::select('SELECT * FROM users WHERE email = "' . $request->email . '"')[0];
-
-        // Generate a token for the user
-        $token = $user->createToken('res_api')->accessToken;
-        return response()->json(
-            ['success' => true, 'token' => $token, 'user' => $data],
-            200
-        );
+        $song = DB::table('songs')->where('id', $id)->first();
+        return response()->json($song);
     }
 
-    // Delete user
-    public function delete(Request $request)
+    public function getSongByKeyword($keyword)
     {
-        DB::delete("DELETE FROM users WHERE id = '$request->id'");
-        return response()->json(['success' => true]);
+        $songs = DB::table('songs')->where('title', 'like', '%' . $keyword . '%')->get();
+        return response()->json($songs);
     }
 
-    // Sign out 
-    public function signout(Request $request)
+    public function getSongByGenre($genre)
     {
-        $token = $request->user()->token();
-        $request->user()->tokens()->where('id', $token->id)->delete();
+        $songs = DB::table('songs')->where('genre', $genre)->get();
+        return response()->json($songs);
     }
 
-    public function getUser(Request $request)
+    public function getMostPopularSong()
     {
-        $user = User::where('email', $request->email)->first();
-        return response()->json(['user' => $user, 'count' => DB::table('posts')->where('user_id', $user->id)->count()]);
+        //get 3 most popular songs
+        $songs = DB::table('songs')->orderBy('play_count', 'desc')->take(3)->get();
+        return response()->json($songs);
     }
 
-    public function updateProfile(Request $request)
+    // get songs by given data
+    public function getSongByData(Request $request)
     {
-        $file = $request->file('file');
-        $imageName =  substr(Hash::make($file->getClientOriginalName()), 0, 10). '.' . $file->extension();
-        $store_path = $file->storeAs('images', $imageName);
-        $ch = DB::table('users')->where('id', '=', $request->id)->update(['img_link' => $store_path]);
-        if ($ch > 0) {
-            return response()->json(['success' => true]);
-        } else {
-            return response()->json(['success' => false]);
-        }
+        $data = $request->all();
+        $songs = DB::table('songs')->where($data)->get();
+        return response()->json($songs);
     }
 
-    public function changePassword(Request $request)
+    //get songs that have nearest published date compare to current date
+    public function getNewestSong()
     {
-        $sc = DB::table('users')->where('id', '=', $request->id)->update(['password' => Hash::make($request->password)]);
-        if ($sc > 0) {
-            return response()->json(['success' => true]);
-        } else {
-            return response()->json(['success' => false]);
-        }
+        $songs = DB::table('songs')->orderBy('published_date', 'desc')->take(3)->get();
+        return response()->json($songs);
     }
 
-    public function getPosts(Request $request)
+    //get song by tag_int 
+    public function getSongByTagInt($tag_int)
     {
-        $posts = DB::select('SELECT * FROM posts WHERE user_id = "' . $request->id . '"');
-        return response()->json(['posts' => $posts]);
-    }
-
-    public function addPost(Request $request)
-    {
-        $sc = DB::insert("INSERT INTO posts (title, body, user_id) VALUES ('" . $request->title . "', '" . $request->content . "', '" . $request->user_id . "')");
-        if ($sc > 0) {
-            return response()->json(['success' => true]);
-        } else {
-            return response()->json(['success' => false]);
-        }
+        $songs = DB::table('songs')->where('tag_int', $tag_int)->get();
+        return response()->json($songs);
     }
 }

@@ -1,0 +1,50 @@
+-- Create a table for audio files
+CREATE TABLE songs (
+    id SERIAL PRIMARY KEY,                  -- Unique identifier for each audio file
+    title VARCHAR(255) NOT NULL,            -- Title of the audio file
+    artist VARCHAR(255),                    -- Artist name
+    genre VARCHAR(100),                     -- Genre of the audio file
+    file_thumb TEXT NOT NULL,               -- URL path to the thumbnail image
+    file_url TEXT NOT NULL,                 -- URL path to the audio file
+    published_date TIMESTAMP DEFAULT NOW(),    -- Date of upload, defaults to current timestamp
+    play_count INT DEFAULT 0,               -- Count of how many times the file has been played
+    tag_int  INT DEFAULT 0                  -- Tags for categorization
+);
+
+-- Create indexes for faster querying (optional)
+CREATE INDEX idx_audio_title ON songs(title);
+CREATE INDEX idx_audio_artist ON songs(artist);
+CREATE INDEX idx_audio_genre ON songs(genre);
+
+-- Example insert statement
+INSERT INTO songs (title, artist, genre,file_thumb, file_url, tag_int) VALUES
+('Tet dong day 1', 'KHOA-Kay Tran', 'Pop','images/i01.jpg' , 'storage/tetdongday1.mp3', 0),
+('Tet dong day 2', 'KHOA-Lang LD', 'Pop', 'images/i02.jpg', 'storage/tetdongday2.mp3', 0),
+('Always be', 'Netrum', 'Synthwave', 'images/i03.jpg', 'storage/alwaysbe.mp3', 1),
+('Forever', 'Vanze', 'House', 'images/i04.jpg', 'storage/forever.mp3', 2),
+('No doubt', 'Rogers & Dean', 'Electronic', 'images/i05.jpg', 'storage/nodoubt.mp3', 3),
+('The hype', 'Twenty one pilots', 'Drum', 'images/i06.jpg', 'storage/thehype.mp3', 0),
+('Love better', 'Wiguez & Vizzen', 'DnB', 'images/i07.jpg', 'storage/lovemebetter.mp3', 4),
+('PCH', 'PACIFICA', 'Electronic', 'images/i08.jpg', 'storage/pch.mp3', 4),
+('End of time', 'K-319', 'Electronic', 'images/i09.jpg', 'storage/endoftime.mp3', 4),
+('Everything', 'Diamond Eyes', 'Dubstep', 'images/i10.jpg', 'storage/everything.mp3', 5),
+('I feel crazy', 'Aeden & Joellé', 'Future House', 'images/i11.jpg', 'storage/ifeelcrazy.mp3', 6),
+('Never be alone', 'The fat rat', 'Melody', 'images/i12.jpg', 'storage/neverbealone.mp3', '{relaxing, melodic, vocal}'),
+('Oblivion', 'The fat rat', 'Melody', 'images/i13.jpg', 'storage/oblivion.mp3', 7),
+('No doubt instrumental', 'Rogers & Dean', 'Electronic', 'images/i14.jpg', 'storage/nodoubt_ins.mp3', 3),
+('Summer time', 'Cartoon', 'Electronic', 'images/i15.jpg', 'storage/summertime.mp3', 3),
+('Vietnam,', 'Starling EDM', 'Melodic Dubstep', 'images/i16.jpg', 'storage/vietnam.mp3', 5),
+('All for you', 'Itro ', 'DnB', 'images/i17.jpg', 'storage/allforyou.mp3', 4),
+('Love u', 'Razihel', 'Dubstep', 'images/i18.jpg', 'storage/loveu.mp3', 5),
+('Alone', 'Marshmellow', 'Electronic', 'images/i19.jpg', 'storage/alone_mar.mp3', 3),
+('Calling out your name', 'MANIA, Tom Wigley & Lottie Jones', 'DnB', 'images/i20.jpg', 'storage/calling.mp3', 5),
+('Get out here', 'Wiguez & Josh Levoid', 'DnB',  'images/i21.jpg', 'storage/getouthere.mp3', 5),
+('Stronger', 'Lemon fight', 'Electronic ', 'images/i26.jpg', 'storage/stronger.mp3', 3),
+('Stronger instrumental', 'Lemon fight', 'Electronic', 'images/i22.jpg', 'storage/lemonstronger_ins.mp3', 3),
+('Stronger', 'Prismo', 'Future bass', 'images/i23.jpg', 'storage/stronger.mp3', 7),
+('Stronger instrumental', 'Prismo', 'Future bass', 'images/i23.jpg', 'storage/stronger_ins.mp3', 7),
+('Lost in the middle', 'T & Sugah', 'DnB', 'images/i25.jpg', 'storage/lostinmiddle.mp3', 5)
+;
+
+-- Optional: Update play_count and published_date to give a more realistic dataset
+UPDATE songs SET play_count = FLOOR(RANDOM() * 1000), published_date = NOW() - (INTERVAL '1 day' * FLOOR(RANDOM() * 365));
